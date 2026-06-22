@@ -15,7 +15,7 @@ class Counter:
 
 class State:
 	SIZE = 9
-	STARTING_STONE_PER_HOLE = 5
+	STARTING_STONES_PER_HOLE = 9
 	MINIMUM_STONES_TO_PLAY = 1
 
 	def hole_iterator(self, turn, hole_index):
@@ -32,8 +32,8 @@ class State:
 	@classmethod
 	def new_starting_position(cls):
 		"""Create starting position state"""
-		row1 = tuple(Hole(cls.STARTING_STONE_PER_HOLE, True) for _ in range(cls.SIZE))
-		row2 = tuple(Hole(cls.STARTING_STONE_PER_HOLE, False) for _ in range(cls.SIZE))
+		row1 = tuple(Hole(cls.STARTING_STONES_PER_HOLE, True) for _ in range(cls.SIZE))
+		row2 = tuple(Hole(cls.STARTING_STONES_PER_HOLE, False) for _ in range(cls.SIZE))
 		point_counter1 = Counter()
 		point_counter2 = Counter()
 		starting_player = True
@@ -91,9 +91,9 @@ class State:
 		hole_iterator = self.hole_iterator(self.turn, hole_index)
 		hole = next(hole_iterator) # get starting hole
 		if hole.stones == None:
-			raise Exception("Unable to start from special hole")
+			raise Exception("Unable to start from kettle")
 		if hole.stones < self.MINIMUM_STONES_TO_PLAY:
-			raise Exception("Forbiden to start with hole with 0 or 1 stones")
+			raise Exception("Forbidden to start from hole with no stones")
 		# special scenario for just one stone in the hole
 		if hole.stones == 1:
 			hole.stones = 0
@@ -132,8 +132,7 @@ class State:
 					self.player2_has_kettle = True
 				else: # prevent creating kettles if one player alredy has one
 					return
-					
-					
+
 				counter = self.counter_of(self.turn)
 				counter.count += hole.stones # 3
 				hole.stones = None # mark as kettle
@@ -141,18 +140,6 @@ class State:
 		# switch player
 		self.turn = not self.turn
 
-	"""def possible_next_states(self):
-		states: list[State] = []
-		row = self.row_of(self.turn)
-		for hole_index in range(self.SIZE):
-			stones = row[hole_index].stones
-			if stones and stones > 1: # legal move, not in kettle and with 2 or more stones
-				state = self.copy()
-				state.play(hole_index)
-				states.append(state)
-
-		return states"""
-	
 	def possible_next_moves(self):
 		row = self.row_of(self.turn)
 		return [
@@ -160,7 +147,6 @@ class State:
 			if (stones := row[hole_index].stones) and stones >= self.MINIMUM_STONES_TO_PLAY # check that it isn't a special hole and has at least 2 stones
 		]
 
-	
 	def finish_game(self):
 		# player on turn has no stones; opposite player gets his own stones
 		row = self.row_of(not self.turn)
@@ -220,15 +206,6 @@ class Eval:
 		self.win = win
 		self.last_move: int | None = None
 		self.moves = []
-
-	def win_gt(self, a: bool | None | type[Draw], b: bool | None | type[Draw]):
-		CONVERTER = {
-			True: 1,
-			Draw: 0,
-			None: 0,
-			False: -1
-		}
-		return CONVERTER[a] > CONVERTER[b]
 	
 	CONVERTER = { # for inequalities
 		True: 1,
@@ -258,9 +235,6 @@ class Eval:
 		a = (self.CONVERTER[self.win], self.eval)
 		b = (self.CONVERTER[other.win], other.eval)
 		return a < b
-
-
-
 
 s = State.new_starting_position()
 
