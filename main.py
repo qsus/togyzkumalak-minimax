@@ -1,10 +1,11 @@
 class Hole:
-	def __init__(self, stones: int | None, player):
+	def __init__(self, stones: int | None, player, index: int):
 		self.stones = stones # None represents kettle
 		self.player = player
+		self.index = index
 
 	def copy(self):
-		return Hole(self.stones, self.player)
+		return Hole(self.stones, self.player, self.index)
 
 class Counter:
 	def __init__(self, count: int = 0):
@@ -32,8 +33,8 @@ class State:
 	@classmethod
 	def new_starting_position(cls):
 		"""Create starting position state"""
-		row1 = tuple(Hole(cls.STARTING_STONES_PER_HOLE, True) for _ in range(cls.SIZE))
-		row2 = tuple(Hole(cls.STARTING_STONES_PER_HOLE, False) for _ in range(cls.SIZE))
+		row1 = tuple(Hole(cls.STARTING_STONES_PER_HOLE, True, i) for i in range(cls.SIZE))
+		row2 = tuple(Hole(cls.STARTING_STONES_PER_HOLE, False, i) for i in range(cls.SIZE))
 		point_counter1 = Counter()
 		point_counter2 = Counter()
 		starting_player = True
@@ -125,7 +126,11 @@ class State:
 				counter.count += hole.stones
 				hole.stones = 0
 
-			if hole.stones == 3 and hole.player != self.turn: # create kettle
+			if (
+				hole.stones == 3 and
+				hole.player != self.turn and
+				hole.index != self.SIZE - 1 # prevent creating kettle on the last hole
+			): # create kettle
 				if hole.player == True and not self.player1_has_kettle:
 					self.player1_has_kettle = True
 				elif hole.player == False and not self.player2_has_kettle:
