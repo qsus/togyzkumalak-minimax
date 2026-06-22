@@ -38,7 +38,7 @@ class State:
 		point_counter1 = Counter()
 		point_counter2 = Counter()
 		starting_player = True
-		return State(row1, row2, point_counter1, point_counter2, starting_player, False, False)
+		return State(row1, row2, point_counter1, point_counter2, starting_player, None, None)
 
 	def copy(self):
 		row1 = tuple(hole.copy() for hole in self.row1)
@@ -46,17 +46,17 @@ class State:
 		point_counter1 = self.point_counter1.copy()
 		point_counter2 = self.point_counter2.copy()
 
-		return State(row1, row2, point_counter1, point_counter2, self.turn, self.player1_has_kettle, self.player2_has_kettle)
+		return State(row1, row2, point_counter1, point_counter2, self.turn, self.player1_kettle, self.player2_kettle)
 
-	def __init__(self, row1: tuple[Hole, ...], row2: tuple[Hole, ...], point_counter1: Counter, point_counter2: Counter, turn, player1_has_kettle, player2_has_kettle):
+	def __init__(self, row1: tuple[Hole, ...], row2: tuple[Hole, ...], point_counter1: Counter, point_counter2: Counter, turn, player1_kettle: int | None, player2_kettle: int | None):
 		"""turn: True - player 1, False - player 2"""
 		self.row1 = row1
 		self.row2 = row2
 		self.point_counter1 = point_counter1
 		self.point_counter2 = point_counter2
 		self.turn = turn
-		self.player1_has_kettle = player1_has_kettle
-		self.player2_has_kettle = player2_has_kettle
+		self.player1_kettle = player1_kettle
+		self.player2_kettle = player2_kettle
 
 	def counter_of(self, player):
 		return self.point_counter1 if player else self.point_counter2
@@ -129,12 +129,13 @@ class State:
 			if (
 				hole.stones == 3 and
 				hole.player != self.turn and
-				hole.index != self.SIZE - 1 # prevent creating kettle on the last hole
+				hole.index != self.SIZE - 1 and # prevent creating kettle on the last hole
+				hole.index not in (self.player1_kettle, self.player2_kettle) # prevent symmetrical kettles
 			): # create kettle
-				if hole.player == True and not self.player1_has_kettle:
-					self.player1_has_kettle = True
-				elif hole.player == False and not self.player2_has_kettle:
-					self.player2_has_kettle = True
+				if hole.player == True and not self.player1_kettle:
+					self.player1_kettle = hole.index
+				elif hole.player == False and not self.player2_kettle:
+					self.player2_kettle = hole.index
 				else: # prevent creating kettles if one player alredy has one
 					return
 
