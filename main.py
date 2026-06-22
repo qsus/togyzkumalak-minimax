@@ -69,23 +69,23 @@ class State:
 		# first player
 		for hole in reversed(self.row1):
 			if hole.stones == None:
-				output += "_ "
+				output += "__ "
 			else:
-				output += str(hole.stones) + " "
+				output += f"{hole.stones:2d} "
 		output += "Score: " + str(self.point_counter1.count) + "\n"
 		# second player
 		for hole in self.row2:
 			if hole.stones == None:
-				output += "_ "
+				output += "__ "
 			else:
-				output += str(hole.stones) + " "
+				output += f"{hole.stones:2d} "
 		output += "Score: " + str(self.point_counter2.count) + "\n"
 		
 		return output
 
 	def human_play(self, hole_index):
 		"""Human natural indexing"""
-		self.play(hole_index + 1)			
+		self.play(hole_index - 1)			
 
 	def play(self, hole_index: int):
 		"""Hole is index of hole from 0 to size -1 for bottom and size -1 to 0 for upper row"""
@@ -242,13 +242,33 @@ class Eval:
 		b = (self.CONVERTER[other.win], other.eval)
 		return a < b
 
-s = State.new_starting_position()
+state = State.new_starting_position()
+print(state)
 
-while True:
-	print(s)
-	eval = s.eval(6)
-	if eval.last_move == None:
-		break
-	s.play(eval.last_move)
-s.finish_game()
-print(s)
+player1_AI = True
+player2_AI = True
+
+while len(state.possible_next_moves()) > 0:
+	if (
+		(state.turn == True and player1_AI) or
+		(state.turn == False and player2_AI)
+	): # AI to play
+		eval = state.eval(6)
+		if eval.last_move == None:
+			break
+		state.play(eval.last_move)
+		print(state)
+	else: # human to play
+		try:
+			hole = int(input("Enter hole index to play: "))
+		except ValueError:
+			print("Invalid input. Please enter a number.")
+			continue
+		if hole-1 not in state.possible_next_moves():
+			print("Invalid move. Try one of these: " + ", ".join(str(move + 1) for move in state.possible_next_moves()))
+			continue
+		state.human_play(hole)
+		print(state)
+
+state.finish_game()
+print(state)
