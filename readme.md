@@ -1,5 +1,7 @@
 # Toguz kumalak minimax
-Jednoduchá implementace hry Toguz kumalak a minimax algoritmu.
+Jednoduchá implementace hry Toguz kumalak a minimax algoritmu na zápočet programování na MFF UK.
+
+Algoritmus rekuzivně prochází strom hry do pevně stanovené hloubky a vyhodnocuje pozici. V nejnižší úrovni stromu se vyhodnocení pozice určuje jako rozdíl počtu kuliček v pokladničkách jednotlivých hráčů.
 
 ## Pravidla
 Kompletní pravidla naleznete na webu [mankala.cz](https://www.mankala.cz/toguz.php).
@@ -13,3 +15,5 @@ python main.py
 ```
 
 Ve výchozím stavu hrají dva počítače proti sobě. Oba hráče lze nezávisle přepnout mezi člověkem a počítačem pomocí proměnných `player1_AI` a `player2_AI` v souboru `main.py`.
+
+Uživatel zadává číslo jamky od 1 do 9.
