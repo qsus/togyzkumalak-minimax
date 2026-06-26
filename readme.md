@@ -14,6 +14,6 @@ Základní princip: každý hráč má 9 jamek s kameny a pokladničku. Hráči 
 python main.py <player1_depth | "human"> <player2_depth | "human">
 ```
 
-Jako `player_depth` se zadává hloubka, do které má minimax algoritmus prohledávat strom hry. Pokud je zadáno `human`, hraje daný hráč ručně. Doporučená hloubka pro minimax algoritmus je 6; analýza prvních tahů pak trvá řádově sekundy.
+Jako `player_depth` se zadává hloubka, do které má minimax algoritmus prohledávat strom hry. Pokud je zadáno `human` (nebo nekladné celé číslo), hraje daný hráč ručně. Doporučená hloubka pro minimax algoritmus je 6; analýza prvních tahů pak trvá řádově sekundy.
 
 Uživatel zadává číslo jamky od 1 do 9, přičemž horní řádek se počítá zprava doleva. Stav desky se vypisuje jako dva řádky důlků, na jejichž koncích je vypsán stav pokladničky. Jako důlek je vypsán počet kuliček v něm, respektive `_`, pokud je důlek pastičkou.

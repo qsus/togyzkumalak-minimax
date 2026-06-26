@@ -250,8 +250,8 @@ if len(sys.argv) < 3:
 	print("AI depth 6 vs human")
 	sys.exit(1)
 
-player1_depth = None
-player2_depth = None
+player1_depth = 0
+player2_depth = 0
 if sys.argv[1] != "human":
 	player1_depth = int(sys.argv[1])
 
@@ -263,12 +263,13 @@ print(state)
 
 while len(state.possible_next_moves()) > 0:
 	if (
-		(state.turn == True and player1_depth != None) or
-		(state.turn == False and player2_depth != None)
+		(state.turn == True and player1_depth > 0) or
+		(state.turn == False and player2_depth > 0)
 	): # engine to play
 		eval = state.eval(player1_depth if state.turn else player2_depth)
 		if eval.last_move == None:
 			break
+		print(eval.last_move, "SSS")
 		state.play(eval.last_move)
 		print(state)
 	else: # human to play
