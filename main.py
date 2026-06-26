@@ -1,3 +1,5 @@
+import sys
+
 class Hole:
 	def __init__(self, stones: int | None, player, index: int):
 		self.stones = stones # None represents kettle
@@ -242,18 +244,29 @@ class Eval:
 		b = (self.CONVERTER[other.win], other.eval)
 		return a < b
 
+if len(sys.argv) < 3:
+	print('Usage: python main.py <player1_depth | "human"> <player2_depth | "human">')
+	print("Example: python main.py 6 human")
+	print("AI depth 6 vs human")
+	sys.exit(1)
+
+player1_depth = None
+player2_depth = None
+if sys.argv[1] != "human":
+	player1_depth = int(sys.argv[1])
+
+if sys.argv[2] != "human":
+	player2_depth = int(sys.argv[2])
+
 state = State.new_starting_position()
 print(state)
 
-player1_AI = True
-player2_AI = True
-
 while len(state.possible_next_moves()) > 0:
 	if (
-		(state.turn == True and player1_AI) or
-		(state.turn == False and player2_AI)
-	): # AI to play
-		eval = state.eval(6)
+		(state.turn == True and player1_depth != None) or
+		(state.turn == False and player2_depth != None)
+	): # engine to play
+		eval = state.eval(player1_depth if state.turn else player2_depth)
 		if eval.last_move == None:
 			break
 		state.play(eval.last_move)
@@ -272,3 +285,9 @@ while len(state.possible_next_moves()) > 0:
 
 state.finish_game()
 print(state)
+if state.point_counter1.count > state.point_counter2.count:
+	print("Player 1 wins!")
+elif state.point_counter1.count < state.point_counter2.count:
+	print("Player 2 wins!")
+else:
+	print("The result is a draw!")
